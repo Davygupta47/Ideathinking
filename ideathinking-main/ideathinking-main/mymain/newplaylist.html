@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Movie Playlist</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-image: url("playlistbg.jpg.jpeg");
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #fffffe;
+            margin-bottom: 20px
+        }
+        .playlist-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-image: 
+        linear-gradient(
+            to bottom left, #f32929af, #11111138
+        );;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #fff;
+        }
+        button {
+            padding: 12px 25px;
+            background-color: #c05bce;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #c05bce;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 15px;
+            background-image: 
+        linear-gradient(
+            to top right, #220e52, #111111
+        );
+            border: 1px solid #555;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-align: left;
+            color: #fff;
+            font-size: 18px;
+        }
+        li::before {
+            content: "🎬 ";
+            margin-right: 10px;
+        }
+        .home-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .home-icon a {
+            color: #ffcc00;
+            font-size: 24px;
+            text-decoration: none;
+        }
+        .home-icon a:hover {
+            color: #e6b800;
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Icon -->
+    <div class="home-icon">
+        <a href="index.html" title="Home"><i class="fas fa-home"></i></a>
+    </div>
+   
+    <div class="playlist-container">
+        <h1>Create Your Movie Playlist</h1>
+        <input type="text" id="movieTitle" placeholder="Enter Movie Title">
+        <button onclick="addMovie()">Add to Playlist</button>
+        
+        <ul id="playlist">
+            <li>The Shawshank Redemption (1994)</li>
+            <li>Inception (2010)</li>
+            <li>Parasite (2019)</li>
+            <li>Interstellar (2014)</li>
+            <li>Whiplash (2014)</li>
+        </ul>
+    </div>
+
+    <script>
+        function addMovie() {
+            const movieTitle = document.getElementById('movieTitle').value;
+            if (movieTitle.trim() === '') {
+                alert('Please enter a movie title.');
+                return;
+            }
+            
+            const ul = document.getElementById('playlist');
+            const li = document.createElement('li');
+            li.textContent = movieTitle;
+            ul.appendChild(li);
+
+            document.getElementById('movieTitle').value = ''; // Clear the input field
+        }
+    </script>
+</body>
+</html>

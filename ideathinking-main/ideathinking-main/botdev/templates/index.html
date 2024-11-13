@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CineBot</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="static/styles.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700,300">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.1.2/css/material-design-iconic-font.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400&family=Finger+Paint&display=swap">
+</head>
+<body>
+    <div class="card">
+        <div id="header">
+            <h1>CineBot!</h1>
+        </div>
+        <div id="message-section">
+            <div class="message" id="bot">
+                <span id="bot-response">Hello.. I'm listening! Go on..</span>
+            </div>
+        </div>
+        <div id="input-section">
+            <input id="input" type="text" placeholder="Type a message" autocomplete="off" autofocus="autofocus"/>
+            <button class="send" onclick="sendMessage()">
+                <div class="circle">
+                    <i class="zmdi zmdi-mail-send"></i>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    
+    <script>
+        const synth = window.speechSynthesis;
+
+        function voiceControl(string) {
+            let u = new SpeechSynthesisUtterance(string);
+            u.text = string;
+            u.lang = "en-us";
+            u.volume = 1;
+            u.rate = 1;
+            u.pitch = 1;
+            synth.speak(u);
+        }
+
+        function sendMessage() {
+            const inputField = document.getElementById("input");
+            let input = inputField.value.trim();
+            if (input != "") {
+                output(input);
+            }
+            inputField.value = "";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const inputField = document.getElementById("input");
+            inputField.addEventListener("keydown", function (e) {
+                if (e.code === "Enter") {
+                    let input = inputField.value.trim();
+                    if (input != "") {
+                        output(input);
+                    }
+                    inputField.value = "";
+                }
+            });
+        });
+
+        function output(input) {
+            let text = input.toLowerCase().replace(/[^\w\s\d]/gi, "");  
+
+            
+            const genre = extractGenre(text);
+            const mood = extractMood(text);
+            const language = extractLanguage(text);
+            const time_period = extractTimePeriod(text);
+            const director = extractDirector(text);
+
+            const requestData = {
+                genre: genre,
+                mood: mood,
+                language: language,
+                time_period: time_period,
+                director: director
+            };
+
+            fetch('http://127.0.0.1:5000/recommend', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                let product = data.length > 0 ? "Recommended movies: " + data.join(', ') : "Sorry, no recommendations found.";
+                addChat(input, product);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addChat(input, "Sorry, there was an error processing your request.");
+            });
+        }
+
+        function addChat(input, product) {
+            const mainDiv = document.getElementById("message-section");
+
+            let userDiv = document.createElement("div");
+            userDiv.id = "user";
+            userDiv .classList.add("message");
+            userDiv.innerHTML = `<span id="user-response">${input}</span>`;
+            mainDiv.appendChild(userDiv);
+
+            let botDiv = document.createElement("div");
+            botDiv.id = "bot";
+            botDiv.classList.add("message");
+            botDiv.innerHTML = `<span id="bot-response">${product}</span>`;
+            mainDiv.appendChild(botDiv);
+
+            var scroll = document.getElementById("message-section");
+            scroll.scrollTop = scroll.scrollHeight;
+
+            voiceControl(product);
+        }
+
+        function extractGenre(text) {
+            const genres = ["action", "comedy", "drama", "horror", "romantic"];
+            for (let genre of genres) {
+                if (text.includes(genre)) {
+                    return genre;
+                }
+            }
+            return "any"; 
+        }
+
+        function extractMood(text) {
+            const moods = ["happy", "sad", "exciting", "calm"];
+            for (let mood of moods) {
+                if (text.includes(mood)) {
+                    return mood;
+                }
+            }
+            return "any";
+        }
+
+        function extractLanguage(text) {
+            const languages = ["english", "spanish", "french", "german"];
+            for (let language of languages) {
+                if (text.includes(language)) {
+                    return language;
+                }
+            }
+            return "any"; 
+        }
+
+        function extractTimePeriod(text) {
+            if (text.includes("old")) {
+                return "old";
+            } else if (text.includes("new")) {
+                return "new";
+            } else if (text.includes("moderate")) {
+                return "moderate";
+            }
+            return "any"; 
+        }
+
+        function extractDirector(text) {
+            const directors = ["nolan", "spielberg", "tarantino"];
+            for (let director of directors) {
+                if (text.includes(director)) {
+                    return director;
+                }
+            }
+            return ""; 
+        }
+    </script>
+</body>
+</html> 
